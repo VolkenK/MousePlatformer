@@ -6,7 +6,6 @@ public class MouseShield : MonoBehaviour
 {
     private GameObject _Player;
     private Vector3 _Mousepos;
-    private int _XMax = 10, _YMax = 10;
 
 
     // Start is called before the first frame update
@@ -21,19 +20,25 @@ public class MouseShield : MonoBehaviour
         //Get the mouse posistion
         _Mousepos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         _Mousepos.z = 0;
-        /*this.transform.position = new Vector3((_Mousepos.x + _Mousepos.y)/2,(_Mousepos.x + _Mousepos.y) / 2, 0);
-        if(this.transform.position.x < _Player.transform.position.x)
-        {
-            this.transform.position = new Vector3()
-        }*/
 
-         /*Vector3 test = new Vector3(Mathf.Pow((_Mousepos.x - _Player.transform.position.x),2), Mathf.Pow((_Mousepos.y - _Player.transform.position.y),2),0);
-         this.transform.position = _Player.transform.position + test.normalized * 3;*/
-        transform.RotateAround(_Player.transform.position, Vector3.up, - * 1f * Time.deltaTime);
+        //Calculate the diffrence between the mouse posistion and the player position
+        Vector3 ShieldDir = new Vector3(_Mousepos.x - _Player.transform.position.x, _Mousepos.y - _Player.transform.position.y,0);
+        //Set the distance of this object equivalent to the player posistion and the diffrence calculated above normalized
+        this.transform.position = _Player.transform.position + ShieldDir.normalized * 3;
+        //Set and calculate the rataion through the use of the player and mouse posistion
+        float angle = AngleBetweenTwoPoints(_Player.transform.position, _Mousepos);
+        transform.rotation = Quaternion.Euler(new Vector3(0f, 0f, angle));
+    }
+
+    float AngleBetweenTwoPoints(Vector3 a, Vector3 b)
+    {
+        //Tan(a.y - b.y, a.x - b.x) * (360/(PI*2))
+        return Mathf.Atan2(a.y - b.y, a.x - b.x) * Mathf.Rad2Deg;
     }
 
     public void GetPlayer()
     {
-        _Player = GameObject.FindGameObjectWithTag("Player");
+        //get player position
+        _Player = GameObject.FindGameObjectWithTag("ShieldCon");
     }
 }
